@@ -45,9 +45,9 @@ module memoria_instruccion(
             for (integer k = 0; k < 32; k = k + 1)
                 begin
                 memoria[k] <= 32'h0;
-                end
             end
         end
+    end
 endmodule
 
 module RegisterFile(input clk,
@@ -310,6 +310,65 @@ module top(
 
     muxMemtoReg muxMemtoReg (.sel(MemToReg_top), .A(ALUResult_top), .B(leer_datos_top), .out(WD_top));
 endmodule 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+`timescale 1ns/1ns
+
+
+module riscv_tb;
+
+    reg clk, reset;
+
+    top uut(.clk(clk), .reset(reset));
+
+    initial 
+    begin
+        $dumpfile("RISCV_tb.vcd");
+        $dumpvars(0, uut);
+        clk = 0;
+        reset = 1;
+        #2;
+        reset = 0;
+        #5;
+        clk = 1;
+        #5;
+        clk = 0;
+        #5;
+        clk = 1;
+         #5;
+        clk = 0;
+
+    end
+endmodule
+
 
 
 
