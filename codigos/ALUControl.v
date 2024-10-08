@@ -20,6 +20,7 @@ begin
             6'b100_000 : out = 3'b000;
             6'b100_111 : out = 3'b010;
             6'b100_001 : out = 3'b001;
+            default: out = 3'b000;
         endcase
     end
 end

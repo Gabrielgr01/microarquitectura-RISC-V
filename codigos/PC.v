@@ -8,11 +8,11 @@ module ProgramCounter (
 
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            pc_out = 32'b0;  
+            pc_out <= 32'b0;  
         end
         else 
         begin
-            pc_out = pc_out + 32'd4;  
+            pc_out <= pc_out + 32'd4;  
         end
     end
 
@@ -22,5 +22,5 @@ module PCmas4(input [31:0] actual,
 output [31:0] siguiente
 );
 
-assign siguiente = 4 + actual;
+assign siguiente = 32'd4 + actual;
 endmodule
