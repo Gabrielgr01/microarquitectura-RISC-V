@@ -26,27 +26,38 @@ module PCmas4(input [31:0] actual,
 endmodule
 
 module memoria_instruccion(
-        input reset, 
-        input [31:0] leer_direccion, 
-        output [31:0] instruccion
+    input reset,
+    input clk, 
+    input [31:0] leer_direccion, 
+    output reg [31:0] instruccion
     );
 
-    reg [31:0] memoria [31:0];
-    assign instruccion = memoria[leer_direccion];
+    reg [31:0] memoria [0:31];  
 
-    /*nitial 
+    initial 
     begin
-            $readmemh("memory_init.hex", memoria);  
+        //$readmemh("memory_init.hex", memoria, 0, 31);
     end
-    */
-    always @(posedge reset)
+
+    always @(posedge clk or posedge reset)
     begin
         if (reset) begin
             for (integer k = 0; k < 32; k = k + 1)
                 begin
-                memoria[k] <= 32'h0;
+                memoria[k] <= 32'h0;  
             end
+            instruccion <= 32'h0;
         end
+        else begin
+        instruccion <= memoria[leer_direccion];
+        memoria[0] = 32'b00000000000000000000000000000000;
+        memoria[4] = 32'b00000000101000111000000010010011;
+        memoria[8] = 32'b00000000110000001111000100010011;
+        memoria[12] = 32'b00000000010000010001000110010011;
+        memoria[16] = 32'b00000000011100101010011000100011;
+        memoria[20] = 32'b00000000110000101010010000000011;  
+        end
+
     end
 endmodule
 
@@ -62,6 +73,9 @@ module RegisterFile(input clk,
     );
 
     reg [31:0] registros [31:0];
+    initial begin
+    registros[7] = 10;
+    end
 
     assign RS1 = registros[A1];
     assign RS2 = registros[A2];
@@ -79,6 +93,7 @@ module RegisterFile(input clk,
         begin
             registros[A3] <= WD;
         end
+        registros[7] = 10;
     end
 endmodule
 
@@ -176,7 +191,8 @@ module ALU (
             3'b011: comp = (A != 0 || B != 0 ) ? 32'b1 : 32'b0; 
             3'b100: comp = (A >= B) ? 32'b1 : 32'b0;
             3'b101: result = B;  
-            default: result = 32'b0;              
+            default: result = 32'b0;
+            default: comp = 32'b0;              
         endcase
 
         
@@ -284,7 +300,7 @@ module top(
 
     PCmas4 PCmas4 (.actual(pc_top), .siguiente(pcmas4_top));
 
-    memoria_instruccion memoria_instruccion (.reset(reset), .leer_direccion(pc_top), .instruccion(instruccion_top));
+    memoria_instruccion memoria_instruccion (.reset(reset), .clk(clk), .leer_direccion(pc_top), .instruccion(instruccion_top));
 
     RegisterFile RegisterFile (.clk(clk), .reset(reset), .regWrite(regWrite_top), .A1(instruccion_top[19:15]), .A2(instruccion_top[24:20]), .A3(instruccion_top[11:7]), .WD(WD_top), .RS1(RS1_top), .RS2(RS2_top));
 
@@ -314,32 +330,6 @@ endmodule
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 `timescale 1ns/1ns
 
 
@@ -363,9 +353,28 @@ module riscv_tb;
         clk = 0;
         #5;
         clk = 1;
-         #5;
+        #5;
         clk = 0;
-
+        #5;
+        clk = 1;
+        #5;
+        clk = 0;
+        #5;
+        clk = 1;
+        #5;
+        clk = 0;
+        #5;
+        clk = 1;
+        #5;
+        clk = 0;
+        #5;
+        clk = 1;
+        #5;
+        clk = 0;
+        #5;
+        clk = 1;
+        #5;
+        clk = 0;
     end
 endmodule
 
