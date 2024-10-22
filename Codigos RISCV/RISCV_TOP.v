@@ -4,16 +4,18 @@ module ProgramCounter (
         input [31:0] pc_in,
         output reg [31:0] pc_out                                   
     );
-
-        always @(posedge clk or posedge reset) begin
-            if (reset) begin
-                pc_out <= 32'b0;  
-            end
-            else 
-            begin
-                pc_out <= pc_in;  
-            end
+    initial begin
+        pc_out = 32'b0; 
+    end
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            pc_out <= 32'b0;  
         end
+        else 
+        begin
+            pc_out <= pc_in;  
+        end
+    end
 
 endmodule
 
@@ -31,26 +33,23 @@ module memoria_instruccion(
     output reg [31:0] instruccion
     );
 
-    reg [127:0] memoria [0:31]; 
+    reg [31:0] memoria [127:0]; 
 
-    initial 
-    begin
-        //$readmemh("memory_init.hex", memoria, 0, 31);
+    initial
+    begin 
+        for (integer i = 0; i < 128; i = i + 1)
+        begin
+            memoria[i] = 32'h0;
+        end
+        $readmemh("memory_init.hex", memoria, 0, 127);
     end
 
     always @(*) 
     begin
-        instruccion <= memoria[leer_direccion];
-        memoria[0] = 32'b00000000000000000000000000000000;
-        memoria[4] = 32'b00000000101000111000000010010011;
-        memoria[8] = 32'b00000000110000001111000100010011;
-        memoria[12] = 32'b00000000010000010001000110010011;
-        memoria[16] = 32'b00000000000000010011010010110111;
-        memoria[20] = 32'b00000000011100101010011000100011;
-        memoria[24] = 32'b00000000110000101010010000000011; 
+        instruccion <= memoria[leer_direccion/4];
     end
 
-    always @(posedge clk or posedge reset)
+    always @(posedge reset)
     begin
         if (reset) begin
             for (integer k = 0; k < 128; k = k + 1)
@@ -74,12 +73,16 @@ module RegisterFile(input clk,
     );
 
     reg [31:0] registros [31:0];
-    initial begin
-    registros[7] = 10;
-    end
-
     assign RS1 = registros[A1];
     assign RS2 = registros[A2];
+
+    initial begin
+        for (integer i = 0; i < 32; i = i + 1)
+        begin
+            registros[i] = 32'h0;
+        end
+        registros[7] = 10;
+    end
 
     always @(posedge clk or posedge reset)
     begin
@@ -94,7 +97,6 @@ module RegisterFile(input clk,
         begin
             registros[A3] <= WD;
         end
-        registros[7] = 10;
     end
 endmodule
 
@@ -162,7 +164,7 @@ module ALUControl (
         begin
             case({ALUop, funct3})
                 6'b001_001 : out = 3'b011;
-                6'b001_010 : out = 3'b100;
+                6'b001_101 : out = 3'b100;
                 6'b010_010 : out = 3'b000;
                 6'b011_010 : out = 3'b000;
                 6'b100_000 : out = 3'b000;
@@ -188,7 +190,7 @@ module ALU (
             3'b000: result = A + B;               
             3'b001: result = A << B;              
             3'b010: result = A & B;               
-            3'b011: comp = (A != 0 || B != 0 ) ? 32'b1 : 32'b0; 
+            3'b011: comp = (A != 0) ? 32'b1 : 32'b0; 
             3'b100: comp = (A >= B) ? 32'b1 : 32'b0;
             3'b101: result = B;  
             default: result = 32'b0;
@@ -344,9 +346,6 @@ module riscv_tb;
         $dumpfile("RISCV_tb.vcd");
         $dumpvars(0, uut);
         clk = 0;
-        reset = 1;
-        #2;
-        reset = 0;
         #5;
         clk = 1;
         #5;

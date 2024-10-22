@@ -4,16 +4,18 @@ module ProgramCounter (
         input [31:0] pc_in,
         output reg [31:0] pc_out                                   
     );
-
-        always @(posedge clk or posedge reset) begin
-            if (reset) begin
-                pc_out <= 32'b0;  
-            end
-            else 
-            begin
-                pc_out <= pc_in;  
-            end
+    initial begin
+        pc_out = 32'b0; 
+    end
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            pc_out <= 32'b0;  
         end
+        else 
+        begin
+            pc_out <= pc_in;  
+        end
+    end
 
 endmodule
 
@@ -31,22 +33,25 @@ module memoria_instruccion(
     output reg [31:0] instruccion
     );
 
-    reg [127:0] memoria [0:31];
+    reg [31:0] memoria [127:0]; 
 
-    initial 
-    begin
-        //$readmemh("memory_init.hex", memoria, 0, 31);
-    end
-
-    always @(*) 
-    begin
-        instruccion = memoria[leer_direccion];
+    initial
+    begin 
+        for (integer i = 0; i < 128; i = i + 1)
+        begin
+            memoria[i] = 32'h0;
+        end
         memoria[0] = 32'b00000000000000000000000000000000;
         memoria[4] = 32'b00000000000000101001000101100011;
         memoria[8] = 32'b00000000000000011001000101100011;
         memoria[16] = 32'b00000000010000101101000101100011;
         memoria[20] = 32'b00000000011000111101000101100011;
         memoria[28] = 32'b00000010000000000000000001101111;   
+    end
+
+    always @(*) 
+    begin
+        instruccion = memoria[leer_direccion]; 
     end
 
     always @(posedge reset)
@@ -78,6 +83,18 @@ module RegisterFile(input clk,
     assign RS1 = registros[A1];
     assign RS2 = registros[A2];
 
+    initial begin
+        for (integer i = 0; i < 32; i = i + 1)
+        begin
+            registros[i] = 32'h0;
+        end
+        registros[5] = 0;
+        registros[3] = 10;
+        registros[4] = 12;
+        registros[6] = 8;
+        registros[7] = 13;
+    end
+
     always @(posedge clk or posedge reset)
     begin
         if (reset)
@@ -91,11 +108,6 @@ module RegisterFile(input clk,
         begin
             registros[A3] <= WD;
         end
-        registros[5] = 0;
-        registros[3] = 10;
-        registros[4] = 12;
-        registros[6] = 8;
-        registros[7] = 13;
     end
 endmodule
 
@@ -345,9 +357,6 @@ module riscv_tb;
         $dumpfile("RISCV_tb_BJ.vcd");
         $dumpvars(0, uut);
         clk = 0;
-        reset = 1;
-        #2;
-        reset = 0;
         #5;
         clk = 1;
         #5;
