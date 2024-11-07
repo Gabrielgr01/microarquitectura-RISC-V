@@ -40,7 +40,7 @@ module memoria_instruccion(
         begin
             memoria[i] = 32'h0;
         end
-        $readmemh("memory_init.hex", memoria, 0, 127);
+        $readmemh("memory_init_sb.hex", memoria, 0, 127);
     end
 
     always @(*) 
@@ -379,7 +379,7 @@ module riscv_tb;
 
     initial 
     begin
-        $dumpfile("RISCV_tb.vcd");
+        $dumpfile("RISCV_tb_sb.vcd");
         $dumpvars(0, uut);
         clk = 0;
         #5;
