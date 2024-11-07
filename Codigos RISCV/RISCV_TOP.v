@@ -28,7 +28,6 @@ endmodule
 
 module memoria_instruccion(
     input reset,
-    input clk, 
     input [31:0] leer_direccion, 
     output reg [31:0] instruccion
     );
@@ -81,7 +80,11 @@ module RegisterFile(input clk,
         begin
             registros[i] = 32'h0;
         end
-        registros[7] = 10;
+        registros[5] = 0;
+        registros[3] = 10;
+        registros[4] = 12;
+        registros[6] = 8;
+        registros[7] = 13;
     end
 
     always @(posedge clk or posedge reset)
@@ -167,6 +170,7 @@ module ALUControl (
                 6'b001_101 : out = 3'b100;
                 6'b010_010 : out = 3'b000;
                 6'b011_010 : out = 3'b000;
+                6'b011_000 : out = 3'b000;
                 6'b100_000 : out = 3'b000;
                 6'b100_111 : out = 3'b010;
                 6'b100_001 : out = 3'b001;
@@ -302,7 +306,7 @@ module top(
 
     PCmas4 PCmas4 (.actual(pc_top), .siguiente(pcmas4_top));
 
-    memoria_instruccion memoria_instruccion (.reset(reset), .clk(clk), .leer_direccion(pc_top), .instruccion(instruccion_top));
+    memoria_instruccion memoria_instruccion (.reset(reset), .leer_direccion(pc_top), .instruccion(instruccion_top));
 
     RegisterFile RegisterFile (.clk(clk), .reset(reset), .regWrite(regWrite_top), .A1(instruccion_top[19:15]), .A2(instruccion_top[24:20]), .A3(instruccion_top[11:7]), .WD(WD_top), .RS1(RS1_top), .RS2(RS2_top));
 
