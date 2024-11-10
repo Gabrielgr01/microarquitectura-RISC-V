@@ -231,7 +231,6 @@ module logica_andBranch(
     assign and_out = branch & comparacion;
 endmodule
 
-
 module sumador_branch(
     input [31:0] input1,
     input [31:0] input2,
@@ -264,7 +263,7 @@ module DataMemory(
     input clk, reset, MemWrite, MemRead, sb,
     input [31:0] direccion, escritura_datos,
     output [31:0] leer_datos 
-);
+    );
 
     reg [31:0] memoria_datos [31:0];
     wire [4:0] direccion_palabra = direccion[6:2]; 
@@ -308,8 +307,6 @@ module DataMemory(
 
 endmodule
 
-
-
 module muxMemtoReg (
        input sel,
        input [31:0] A,
@@ -319,12 +316,6 @@ module muxMemtoReg (
 
     assign out = (sel) ? B : A; 
 endmodule
-
-
-
-
-
-
 
 module top(
     input clk, 
@@ -365,11 +356,7 @@ module top(
     muxMemtoReg muxMemtoReg (.sel(MemToReg_top), .A(ALUResult_top), .B(leer_datos_top), .out(WD_top));
 endmodule 
 
-
-
-
 `timescale 1ns/1ns
-
 
 module riscv_tb;
 
