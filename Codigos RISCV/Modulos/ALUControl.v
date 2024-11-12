@@ -31,7 +31,7 @@ module ALUControl (
     end
 endmodule
 
-//Este test bench comprueba que las combinaciones de ALUop y Funct3 dan como resultado el codigo esperado
+//Este test bench comprueba que cada combinacion de ALUop y Funct3 dan como resultado el codigo esperado
 module ALUControl_tb;
     reg [2:0] ALUop;
     reg [2:0] funct3;

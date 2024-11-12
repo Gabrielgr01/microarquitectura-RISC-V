@@ -38,6 +38,7 @@ module memoria_instruccion(
 endmodule
 
 //Este testbench tiene como finalidad comprobar la lectura correcta de el archivo de memoria y el funcionamiento del reset, se espera ver que en las direcciones dadas esten las instrucciones en el archivo .hex
+//el test esta oensado para poderse realizar con distintos .hex, por lo que no tiene casos de valores esperados, se comparan con el archivo de instrucciones directamente
 module memoria_instruccion_tb;
     reg reset;
     reg [31:0] leer_direccion;

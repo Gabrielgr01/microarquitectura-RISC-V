@@ -6,7 +6,7 @@ module sumador_branch(
     output [31:0] out_suma
     );
     //Se suma la direccion actual a la direccion de branch, a esta se le aplica un shift a la izquierda para que sea en formato de palabra
-    assign out_suma = input1 + (input2<<2);
+    assign out_suma = input1 + input2;
 endmodule
 
 `timescale 1ns / 1ps
@@ -31,8 +31,8 @@ module sumador_branch_tb;
         input1 = 32'h00000010;  // Ejemplo de PC actual
         input2 = 32'h00000004;  // Ejemplo de offset de salto
         #10;
-        $display("Valor esperado de out_suma = %h, Valor obtenido de out_suma = %h", input1 + (input2 << 2), out_suma);
-        if (out_suma !== input1 + (input2 << 2))
+        $display("Valor esperado de out_suma = %h, Valor obtenido de out_suma = %h", input1 + input2, out_suma);
+        if (out_suma !== input1 + input2)
             $display("Incorrecto");
         else
             $display("Correcto");
