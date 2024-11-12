@@ -104,7 +104,7 @@ endmodule
 module ImmGen(
     input [6:0] opcode,
     input [31:0] instruccion,
-    output reg   [31:0] Imm
+    output reg [31:0] Imm
     );
 
     always @(*)
@@ -229,27 +229,13 @@ module logica_andBranch(
     assign and_out = branch & comparacion;
 endmodule
 
-module sumador_restador_branch(
+module sumador_branch(
     input [31:0] input1,
     input [31:0] input2,
-    input branch,
-    input [2:0] control,       
-    output reg [31:0] out_suma    
+    output [31:0] out_suma
     );
-
-    always @(*) begin
-        out_suma = 32'b0;
-        if (branch)
-        begin
-            case (control)
-                3'b011: out_suma = input1 + input2;  
-                3'b100: out_suma = input1 - (~input2 + 1);  
-                default: out_suma = 32'b0;           
-            endcase
-        end
-    end
+    assign out_suma = input1 + input2;
 endmodule
-
 
 module muxPCsrc (
        input sel,
@@ -273,8 +259,8 @@ endmodule
 
 module DataMemory(
     input clk, reset, MemWrite, MemRead, sb,
-    input   [31:0] direccion, escritura_datos,
-    output   [31:0] leer_datos 
+    input [31:0] direccion, escritura_datos,
+    output [31:0] leer_datos 
     );
 
     reg [31:0] memoria_datos [31:0];
@@ -355,7 +341,7 @@ module top(
 
     muxALUsrc muxALUsrc (.sel(ALUsrc_top), .A(RS2_top), .B(Imm_top), .out(B_top));
 
-    sumador_restador_branch sumador_restador_branch(.branch(branch_top), .control(ALUControlOut_top), .input1(pc_top), .input2(Imm_top), .out_suma(out_suma_top));
+    sumador_branch sumador_branch(.input1(pc_top), .input2(Imm_top), .out_suma(out_suma_top));
 
     logica_andBranch logica_andBranch(.branch(branch_top), .comparacion(comp_top), .and_out(and_top));
 
@@ -378,9 +364,9 @@ module riscv_tb;
     initial begin
     $dumpfile("RISCV_tb.vcd");
     $dumpvars(0, uut);
-    clk = 0;              // Inicializa el reloj en 0
+    clk = 0;              
         repeat (100) begin
-            #5 clk = ~clk;    // Cambia el valor de `clk` cada 5 unidades de tiempo
+            #5 clk = ~clk;  
         end
     end
 endmodule
