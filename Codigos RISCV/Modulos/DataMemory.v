@@ -11,7 +11,24 @@ module DataMemory(
     //tanto direccion palabra como offset son necesarios para implementar el store byte, direccion de palabra hace una division entre 4 para obtener la palabra y el offset son los primeros dos bits de la direccion, 
     //que indica si es el byte 0, 1, 2 o 3
     wire [4:0] direccion_palabra = direccion[6:2]; 
-    wire [1:0] offset = direccion[1:0]; 
+    wire [1:0] offset = direccion[1:0];
+ //Se agrega un task que se puede llamar al final de la simulacion del modulo top, este task se encarga de hacer un dump de los contenidos de memoria a un archivo de texto para su revision
+    task dump_memory;
+        integer file, i;
+        begin
+            file = $fopen("data_memory_dump.txt", "w");
+            if (file) begin
+                for (i = 0; i < 32; i = i + 1) begin
+                    $fwrite(file, "memoria_datos[%0d] = %h\n", i, memoria_datos[i]);
+                end
+                $fclose(file);
+            end else begin
+                $display("Error abriendo el archivo.");
+            end
+        end
+    endtask
+
+
     //Se inician los valores en cero
     initial begin
         for (integer k = 0; k < 32; k = k + 1)
@@ -76,8 +93,9 @@ module tb_DataMemory;
     .escritura_datos(escritura_datos),
     .leer_datos(leer_datos)
   );
-
-  always #5 clk = ~clk;
+    integer i;
+    integer file;
+    always #5 clk = ~clk;
 
   initial begin
     clk = 0;
@@ -124,8 +142,7 @@ module tb_DataMemory;
     if (leer_datos[15:8] !== 8'b01111111) $display("Store byte incorrecto");
     else $display("Store byte correcto");
     MemRead = 0;
-
+    uut.DataMemory.dump_memory();
     $finish;
   end
-
 endmodule
